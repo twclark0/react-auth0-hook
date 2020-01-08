@@ -1,0 +1,45 @@
+* {
+  font-family: 'Montserrat', sans-serif;
+}
+blockquote {
+  padding: 0 5em;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  letter-spacing: 2px;
+}
+h1 {
+  font-size: 3em;
+  font-weight: 500;
+}
+h2 {
+  font-size: 2.5em;
+}
+h3 {
+  font-size: 2em;
+}
+h4 {
+  font-size: 1.5em;
+}
+h5 {
+  font-size: 1.2em;
+}
+li {
+  padding: 15px 0;
+}
+.cs-title {
+  color: #fff;
+}
+.cs-scaled-content > div {
+  overflow: visible !important;
+}
+ol {
+  padding-left: 10%;
+}
+em {
+  color: #f4592f;
+}
