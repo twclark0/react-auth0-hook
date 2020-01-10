@@ -28,6 +28,9 @@ h4 {
 h5 {
   font-size: 1.2em;
 }
+h6 {
+  font-size: 12px;
+}
 li {
   padding: 15px 0;
 }
@@ -42,4 +45,7 @@ ol {
 }
 em {
   color: #f4592f;
+}
+a {
+  color: hsl(13, 90%, 57%) !important;
 }

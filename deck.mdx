@@ -46,272 +46,457 @@ export { nightOwlFull as theme } from 'code-surfer'
   />
 </Head>
 
-##### React to Authentication with an Auth0 Custom Hook
+##### *React* to Authentication with an Auth0 Custom Hook
 
 > -Tyler Clark
 
 ---
 
-# :wave: Nice to meet ya
+### :wave: Nice to meet ya
 
 > Twitter: _@iamtylerwclark_
 
 ---
 
-##### I need to add Authentication to my app... huh?
+##### I need to add Authentication to my app... where do I even start?
 
 ---
 
 #### Table of Contents
 
+- Why Auth0?
+- Registering your application
+- Authentication and Access Tokens
+- Reviewing the SDk
+- Breaking down the useAuth0 hook
+
+---
+
+### Why Auth0?
+
+> "Identity made simple for Developers"
+
+---
+
+### Sign up step 1
+
+<img src="./signup1.png" />
+
+---
+
+### Sign up step 2
+
+<img src="./signup.png" />
+
+---
+
+### Register an application
+
+<img src="./application.png" />
+
+
+---
+
+### Quick Start a React app
+
+<img src="./quickstart.png" />
+
+---
+
+### Download Sample
+
+<img src="./download.png" />
+
+---
+
+### Sample Code
+
+<img src="./github.png" />
+
+---
+
+Auth0 SDK
+
+<img src="./flow.png" style={{width: '500'}} />
+
+###### Source: https://auth0.com/docs/microsites/call-api/call-api-single-page-app
+
+---
+
+<img src="./sdk.png" style={{width: '500'}} />
+
+---
+
+### Access tokens
+
+- opaque
+- JSON Web Token (JWT)
+
+---
+
+### JSON Web Token (JWT)
+
+- Compact: sent through URL, param, or header
+- Self-contained: encrypted or signed
+- LocalStorage, cookie, etc... within browser
+
+---
+
+<img src="./dashboard.png" style={{width: '500'}} />
+
 ---
 
 <CodeSurferLayout>
 
-```js title="Recursion"
-function counter() {
-  for (let n = 0; n <= 10; n++) {
-    console.log(n)
-  }
-}
+```js title="SDK"
 
-counter() // 0, 1, 2, 3, 4...
+npm install @auth0/auth0-spa-js
+
+yarn add @auth0/auth0-spa-js
+
+```
+</CodeSurferLayout>
+
+---
+
+<CodeSurferLayout>
+
+```js title="SDK"
+
+<script src="https://cdn.auth0.com/js/auth0-spa-js/1.2/auth0-spa-js.production.js"></script>
+
+```
+</CodeSurferLayout>
+
+---
+
+<CodeSurferLayout>
+
+```js title="SDK"
+
+import createAuth0Client from '@auth0/auth0-spa-js';
+
+// either with async/await or promises
+const auth0 = await createAuth0Client({
+  domain: 'YOUR_DOMAIN',
+  client_id: 'YOUR_CLIENT_ID'
+});
+
 ```
 
-```js 2:4 title="Recursion"
-function counter() {
-  for (let n = 0; n <= 10; n++) {
-    console.log(n)
-  }
-}
+```js title="Login and get user info"
+const auth0 = await createAuth0Client({
+  domain: 'YOUR_DOMAIN',
+  client_id: 'YOUR_CLIENT_ID'
+})
 
-counter() // 0, 1, 2, 3, 4...
+document.getElementById('login').addEventListener('click', async () => {
+  await auth0.loginWithRedirect({
+    redirect_uri: 'http://localhost:3000/'
+  });
+  const user = await auth0.getUser();
+});
+
 ```
 
-```js 7 title="Recursion"
-function counter() {
-  for (let n = 0; n <= 10; n++) {
-    console.log(n)
-  }
-}
+```js title="Call an API with token"
+document.getElementById('callApi').addEventListener('click', async () => {
+  const accessToken = await auth0.getTokenSilently();
+  const result = await fetch('https://exampleco.com/api', {
+    method: 'GET',
+    headers: {
+      Authorization: 'Bearer ' + accessToken
+    }
+  });
+  const data = await result.json();
+  console.log(data);
+});
 
-counter() // 0, 1, 2, 3, 4...
+```
+</CodeSurferLayout>
+
+---
+
+<CodeSurferLayout>
+
+```js title="Calling your API"
+
+import createAuth0Client from '@auth0/auth0-spa-js';
+
+// either with async/await or promises
+const auth0 = await createAuth0Client({
+  domain: 'YOUR_DOMAIN',
+  client_id: 'YOUR_CLIENT_ID'
+});
+
 ```
 
-```js title="Recursion"
-function counter(n) {
-  console.log(n)
-  return counter(n + 1)
-}
+```js title="Login and get user info"
+const auth0 = await createAuth0Client({
+  domain: 'YOUR_DOMAIN',
+  client_id: 'YOUR_CLIENT_ID'
+})
 
-counter(0) // 0, 1, 2, 3, 4...Infinity
+document.getElementById('login').addEventListener('click', async () => {
+  await auth0.loginWithRedirect({
+    redirect_uri: 'http://localhost:3000/'
+  });
+  const user = await auth0.getUser();
+});
+
+```
+</CodeSurferLayout>
+
+---
+
+### What comes with the SDK?
+
+- isAuthenticated()
+- getUser()
+- loginWithPopup()
+- handleRedirectCallback()
+
+---
+
+### What comes with the SDK?
+
+- getIdTokenClaims()
+- loginWithRedirect()
+- getTokenSilently()
+- getTokenWithPopup()
+- logout()
+
+---
+
+#### React _Context_ & the _useAuth0_ hook
+
+---
+
+<CodeSurferLayout>
+
+```js title="Context"
+
+const Auth0Context = React.createContext()
+
+const useAuth0 = () => useContext(Auth0Context);
+
 ```
 
-```js 3 title="Recursion"
-function counter(n) {
-  console.log(n)
-  return counter(n + 1)
-}
+```js title="Context"
 
-counter(0) // 0, 1, 2, 3, 4...Infinity
+const Auth0Context = React.createContext()
+
+<Auth0Context.Provider
+      value={{
+        ...
+      }}
+    >
+      {children}
+    </Auth0Context.Provider>
+
 ```
 
-```js 6 title="Recursion"
-function counter(n) {
-  console.log(n)
-  return counter(n + 1)
-}
+```js title="Context"
 
-counter(0) // 0, 1, 2, 3, 4...Infinity
+ReactDOM.render(
+  <Auth0Provider>
+    <App />
+  </Auth0Provider>
+)
+
 ```
 
-```js title="Recursion"
-function counter(n) {
-  console.log(n)
-  if (n === 10) return
-  return counter(n + 1)
-}
+```js title="Context"
 
-counter(0) // 0, 1, 2, 3, 4...10
+import { useAuth0 } from "../react-auth0-spa"
+
+const { ... } = useAuth0()
+
 ```
 
 </CodeSurferLayout>
 
 ---
 
-# ....
-
----
-
 <CodeSurferLayout>
 
-```js title="Single lookup"
-const a = [1, 2, 3, 4]
+```js
+<Auth0Context.Provider
+      value={{
+        ...
+      }}
+    >
+      {children}
+</Auth0Context.Provider>
 ```
 
-```js title="Single lookup"
-const a = [1, 2, 3, 4]
-
-function findLastValue(a) {
-  return a[a.length]
-}
-
-console.log(findLastValue(a))
-```
-
-</CodeSurferLayout>
-
----
-
-### ...
-
-
----
-
-<CodeSurferLayout>
-
-```js title="Linked lists"
-function LinkedListNode(data) {
-  this.data = data
-  this.next = null
+```js
+export const Auth0Provider = ({children}) => {
+  return (
+    <Auth0Context.Provider
+          value={{
+            ...
+          }}
+        >
+          {children}
+    </Auth0Context.Provider>
+    )
 }
 ```
 
-```js 2:3 title="Linked lists"
-function LinkedListNode(data) {
-  this.data = data
-  this.next = null
+```js
+export const Auth0Provider = ({children}) => {
+  useEffect(() => {
+    const auth0 = await createAuth0Client({
+    domain: 'YOUR_DOMAIN',
+    client_id: 'YOUR_CLIENT_ID'
+    })
+  }, [])
+  return (
+    <Auth0Context.Provider
+          value={{
+            ...
+          }}
+        >
+          {children}
+    </Auth0Context.Provider>
+    )
 }
 ```
 
-```js title="Linked lists"
-function LinkedListNode(data) {
-  this.data = data
-  this.next = null
-}
-
-const head = new LinkedListNode(1)
-```
-
-```js title="Linked lists"
-function LinkedListNode(data) {
-  this.data = data
-  this.next = null
-}
-
-const head = new LinkedListNode(1)
-head.next = new LinkedListNode(2)
-```
-
-```js 1:7 title="Linked lists"
-function LinkedListNode(data) {
-  this.data = data
-  this.next = null
-}
-
-const head = new LinkedListNode(1)
-head.next = new LinkedListNode(2)
-```
-
-```js title="Linked lists"
-head = {
-  data: 1,
-  next: {
-    data: 2,
-    next: null
-  }
+```js
+export const Auth0Provider = ({children}) => {
+  const [loading, setLoading] = useState(false)
+  ...
+  useEffect(() => {
+    setLoading(true)
+    const auth0 = await createAuth0Client({
+    domain: 'YOUR_DOMAIN',
+    client_id: 'YOUR_CLIENT_ID'
+    })
+    setLoading(false)
+  }, [])
+  return (
+    <Auth0Context.Provider
+          value={{
+            ...
+          }}
+        >
+          {children}
+    </Auth0Context.Provider>
+    )
 }
 ```
 
-</CodeSurferLayout>
-
-
----
-
-<CodeSurferLayout>
-
-```js  title="Stacks"
-const stack = [1]
-```
-
-```js title="Stacks"
-const stack = [1, 2]
-```
-
-```js  title="Stacks"
-const stack = [1, 2, 3]
-```
-
-```js title="Stacks"
-const stack = [1, 2]
-```
-
-```js title="Stacks"
-const stack = [1]
-```
-
-</CodeSurferLayout>
-
----
-
-# Stacks
-
-- pop(): Remove top item from stack
-- push(i): Add an item to top of stack
-- peek(): Return the top of stack
-- isEmpty(): Returns true if stack is empty
-
-
-
----
-
-<CodeSurferLayout>
-
-```js  title="Stacks"
-function CreateStack() {
-  this.stack = []
-  this.pop = x => {}
-  this.push = x => {}
-  this.peek = () => {}
-  this.isEmpty = () => {}
+```js
+export const Auth0Provider = ({children}) => {
+  const [loading, setLoading] = useState(false)
+  const [user, setUser] = useState();
+  useEffect(() => {
+    setLoading(true)
+    const auth0 = await createAuth0Client({
+    domain: 'YOUR_DOMAIN',
+    client_id: 'YOUR_CLIENT_ID'
+    })
+    setLoading(false)
+    const isAuthenticated = await auth0FromHook.isAuthenticated();
+    if (isAuthenticated) {
+        const user = await auth0FromHook.getUser();
+        setUser(user);
+      }
+  }, [])
+  return (
+    <Auth0Context.Provider
+          value={{
+            ...
+          }}
+        >
+          {children}
+    </Auth0Context.Provider>
+    )
 }
-
-const myStack = new CreateStack()
 ```
 
-</CodeSurferLayout>
-
----
-
-# Queues
-
-- First-in, first-out
-- Removed in the order they are added
-
-
-
----
-
-<CodeSurferLayout>
-
-```js  title="Queues"
-const queue = [1]
+```js
+export const Auth0Provider = ({children}) => {
+  const [loading, setLoading] = useState(false)
+  const [user, setUser] = useState();
+  useEffect(() => {
+    setLoading(true)
+    const auth0 = await createAuth0Client({
+    domain: 'YOUR_DOMAIN',
+    client_id: 'YOUR_CLIENT_ID'
+    }, [])
+    setLoading(false)
+    const isAuthenticated = await auth0FromHook.isAuthenticated();
+    if (isAuthenticated) {
+        const user = await auth0FromHook.getUser();
+        setUser(user);
+      }
+  })
+  return (
+    <Auth0Context.Provider
+      value={{
+        isAuthenticated,
+        user,
+        loginWithPopup,
+        handleRedirectCallback,
+        getIdTokenClaims: (...p) => auth0Client.getIdTokenClaims(...p),
+        loginWithRedirect: (...p) => auth0Client.loginWithRedirect(...p),
+        getTokenSilently: (...p) => auth0Client.getTokenSilently(...p),
+        getTokenWithPopup: (...p) => auth0Client.getTokenWithPopup(...p),
+        logout: (...p) => auth0Client.logout(...p)
+      }}
+        >
+          {children}
+    </Auth0Context.Provider>
+    )
+}
 ```
 
-```js title="Queues"
-const queue = [1, 2]
+```js title="PrivateRoute.js"
+
+import { useAuth0 } from "../react-auth0-spa"
+
+const { isAuthenticated, loginWithRedirect } = useAuth0()
+
 ```
 
-```js  title="Queues"
-const queue = [1, 2, 3]
-```
-
-```js title="Queues"
-const queue = [2, 3]
-```
-
-```js title="Queues"
-const queue = [3]
+```js
+export const Auth0Provider = ({children}) => {
+  const [loading, setLoading] = useState(false)
+  const [user, setUser] = useState();
+  useEffect(() => {
+    setLoading(true)
+    const auth0 = await createAuth0Client({
+    domain: 'YOUR_DOMAIN',
+    client_id: 'YOUR_CLIENT_ID'
+    }, [])
+    setLoading(false)
+    const isAuthenticated = await auth0FromHook.isAuthenticated();
+    if (isAuthenticated) {
+        const user = await auth0FromHook.getUser();
+        setUser(user);
+      }
+  })
+  return (
+    <Auth0Context.Provider
+      value={{
+        isAuthenticated,
+        user,
+        loginWithPopup,
+        handleRedirectCallback,
+        getIdTokenClaims: (...p) => auth0Client.getIdTokenClaims(...p),
+        loginWithRedirect: (...p) => auth0Client.loginWithRedirect(...p),
+        getTokenSilently: (...p) => auth0Client.getTokenSilently(...p),
+        getTokenWithPopup: (...p) => auth0Client.getTokenWithPopup(...p),
+        logout: (...p) => auth0Client.logout(...p)
+      }}
+        >
+          {children}
+    </Auth0Context.Provider>
+    )
+}
 ```
 
 </CodeSurferLayout>
@@ -320,9 +505,9 @@ const queue = [3]
 
 # Other references
 
-- Cracking the coding interview
-- The Imposter's Handbook
-- Egghead, Pluralsight, Frontend Masters courses
+- [Authenticating Your First React App](https://auth0.com/blog/authenticating-your-first-react-app/)
+- [Auth0 React Github samples](https://github.com/auth0-samples/auth0-react-samples)
+- [Securing Gatsby with Auth0](https://auth0.com/blog/securing-gatsby-with-auth0/)
 
 ---
 
