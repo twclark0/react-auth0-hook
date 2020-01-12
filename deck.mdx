@@ -46,9 +46,7 @@ export { nightOwlFull as theme } from 'code-surfer'
   />
 </Head>
 
-##### *React* to Authentication with an Auth0 Custom Hook
-
-> -Tyler Clark
+##### *React* to Authentication with Custom Hooks
 
 ---
 
@@ -58,64 +56,74 @@ export { nightOwlFull as theme } from 'code-surfer'
 
 ---
 
-##### I need to add Authentication to my app... where do I even start?
+##### I need to add Authentication to my app... where do I even start? 😭
 
 ---
 
-#### Table of Contents
-
-- Why Auth0?
-- Registering your application
-- Authentication and Access Tokens
-- Reviewing the SDk
-- Breaking down the useAuth0 hook
+#### *Authentication* vs. *Authorization*
 
 ---
 
-### Why Auth0?
+#### *Authentication*
 
-> "Identity made simple for Developers"
+> Authentication is the process of determining if someone is who they say they are.
 
----
-
-### Sign up step 1
-
-<img src="./signup1.png" />
+<img src="./icon-authorization-server.png" />
 
 ---
 
-### Sign up step 2
+#### *Authentication*
 
-<img src="./signup.png" />
+> Checks a user's credentials for a match in a database of authorized users or in a data authentication server.
 
----
-
-### Register an application
-
-<img src="./application.png" />
-
+<img src="./icon-credential-user.png" />
 
 ---
 
-### Quick Start a React app
+#### Authentication
 
-<img src="./quickstart.png" />
+<div className="containterFlex">
+<div className="flex">
+  <img src="./icon-browser.png" />
+React App
+</div>
+
+<div>
+    <img src="./icon-social-providers.png" />
+    Identity provider
+</div>
+
+<div>
+  <img src="./icon-authorization-server.png" />
+  Database
+</div>
+</div>
 
 ---
 
-### Download Sample
+#### What about threats?
 
-<img src="./download.png" />
-
----
-
-### Sample Code
-
-<img src="./github.png" />
+# 😈
 
 ---
 
-Auth0 SDK
+#### SQL Injection
+
+# 💻
+
+---
+
+#### Man-in-the-Middle (MitM)
+
+# 👨‍💻
+
+---
+
+#### Replay attacks
+
+# 💬
+
+---
 
 <img src="./flow.png" style={{width: '500'}} />
 
@@ -127,190 +135,693 @@ Auth0 SDK
 
 ---
 
-### Access tokens
+#### So I'm signed in, now what?
 
-- opaque
-- JSON Web Token (JWT)
-
----
-
-### JSON Web Token (JWT)
-
-- Compact: sent through URL, param, or header
-- Self-contained: encrypted or signed
-- LocalStorage, cookie, etc... within browser
+# 🤷‍
 
 ---
 
-<img src="./dashboard.png" style={{width: '500'}} />
+### *Authorization*
+
+<img src="./icon-api.png" />
+
+---
+
+Access token -> SPA -> API
+
+<img src="./icon-boundary-protocol.png" />
+
+---
+
+
+### Authorization with JWTs
+
+JSON Web Token (JWT)
+
+<img src="./icon-cookie.png" />
+
+---
+
+Digitally signed with secret HMAC algorithm
+
+<img src="./icon-id-token.png" />
+
+---
+
+Encoded -> Decoded -> Access Granted
+
+<img src="./icon-access-token.png" />
+
+---
+
+##### React  ❤️ Authorization
+
+---
+
+<div
+  dangerouslySetInnerHTML={{
+    __html: `
+      <video
+        style="max-width: 100%"
+        controls
+        autoplay
+        muted
+        src="./auth0-walk-through.mp4"
+      />
+    `,
+  }}
+/>
 
 ---
 
 <CodeSurferLayout>
 
-```js title="SDK"
-
-npm install @auth0/auth0-spa-js
-
-yarn add @auth0/auth0-spa-js
-
-```
-</CodeSurferLayout>
-
----
-
-<CodeSurferLayout>
-
-```js title="SDK"
-
-<script src="https://cdn.auth0.com/js/auth0-spa-js/1.2/auth0-spa-js.production.js"></script>
-
-```
-</CodeSurferLayout>
-
----
-
-<CodeSurferLayout>
-
-```js title="SDK"
+```js title="Setup"
 
 import createAuth0Client from '@auth0/auth0-spa-js';
 
-// either with async/await or promises
-const auth0 = await createAuth0Client({
+const auth0Client = await createAuth0Client({
   domain: 'YOUR_DOMAIN',
   client_id: 'YOUR_CLIENT_ID'
 });
 
 ```
 
-```js title="Login and get user info"
-const auth0 = await createAuth0Client({
+```js title="Who are you?"
+
+import createAuth0Client from '@auth0/auth0-spa-js';
+
+const auth0Client = await createAuth0Client({
   domain: 'YOUR_DOMAIN',
   client_id: 'YOUR_CLIENT_ID'
+});
+
+ const isAuthenticated = await auth0Client.isAuthenticated()
+
+```
+
+```js title="Oh hi tyler"
+
+import createAuth0Client from '@auth0/auth0-spa-js';
+
+const auth0Client = await createAuth0Client({
+  domain: 'YOUR_DOMAIN',
+  client_id: 'YOUR_CLIENT_ID'
+});
+
+ const isAuthenticated = await auth0Client.isAuthenticated()
+
+ const user = isAuthenticated ? await auth0Client.getUser() : null
+
+```
+
+</CodeSurferLayout>
+
+---
+
+#### *SDKs*
+<img src="./icon-sdks.png" />
+
+---
+
+<CodeSurferLayout>
+
+```js title="Login"
+                <button
+                  onClick={loginWithRedirect}>
+                  Login
+                </button>
+```
+
+</CodeSurferLayout>
+
+---
+
+<CodeSurferLayout>
+
+```js title="Login"
+
+import createAuth0Client from '@auth0/auth0-spa-js';
+
+const auth0Client = await createAuth0Client({
+  domain: 'YOUR_DOMAIN',
+  client_id: 'YOUR_CLIENT_ID'
+});
+
+```
+
+```js title="Setup"
+
+import createAuth0Client from '@auth0/auth0-spa-js';
+
+const auth0Client = await createAuth0Client({
+  domain: 'YOUR_DOMAIN',
+  client_id: 'YOUR_CLIENT_ID'
+});
+
+
+const loginWithRedirect = auth0Client.loginWithRedirect(...e)
+
+```
+
+```js title="Setup"
+
+import createAuth0Client from '@auth0/auth0-spa-js';
+
+const auth0Client = await createAuth0Client({
+  domain: 'YOUR_DOMAIN',
+  client_id: 'YOUR_CLIENT_ID'
+});
+
+
+const loginWithRedirect = auth0Client.loginWithRedirect(...e)
+
+                <button
+                  onClick={loginWithRedirect}>
+                  Login
+                </button>
+
+```
+
+</CodeSurferLayout>
+
+---
+
+<img src="./test-login.png" />
+
+---
+
+<CodeSurferLayout>
+
+```js title="Get access tokens"
+
+const auth0Client = await createAuth0Client({
+  domain: 'YOUR_DOMAIN',
+  client_id: 'YOUR_CLIENT_ID'
+});
+
+```
+
+```js title="Get access tokens"
+
+const auth0Client = await createAuth0Client({
+  domain: 'YOUR_DOMAIN',
+  client_id: 'YOUR_CLIENT_ID'
+});
+
+
+const getTokenSilently = auth0Client.getTokenSilently(...e)
+
+```
+
+```js title="Get access tokens"
+
+const auth0Client = await createAuth0Client({
+  domain: 'YOUR_DOMAIN',
+  client_id: 'YOUR_CLIENT_ID'
+});
+
+
+const getTokenSilently = auth0Client.getTokenSilently()
+
+fetch('https://some-api.com/test', {
+  headers: {
+    authorization: getTokenSilently
+  }
 })
 
-document.getElementById('login').addEventListener('click', async () => {
-  await auth0.loginWithRedirect({
-    redirect_uri: 'http://localhost:3000/'
-  });
-  const user = await auth0.getUser();
+```
+
+</CodeSurferLayout>
+
+---
+
+<CodeSurferLayout>
+
+```js title="Logout"
+
+const auth0Client = await createAuth0Client({
+  domain: 'YOUR_DOMAIN',
+  client_id: 'YOUR_CLIENT_ID'
 });
 
 ```
 
-```js title="Call an API with token"
-document.getElementById('callApi').addEventListener('click', async () => {
-  const accessToken = await auth0.getTokenSilently();
-  const result = await fetch('https://exampleco.com/api', {
-    method: 'GET',
-    headers: {
-      Authorization: 'Bearer ' + accessToken
+```js title="Logout"
+
+const auth0Client = await createAuth0Client({
+  domain: 'YOUR_DOMAIN',
+  client_id: 'YOUR_CLIENT_ID'
+});
+
+
+const logout = auth0Client.logout(...e)
+
+```
+
+```js title="Logout"
+
+const auth0Client = await createAuth0Client({
+  domain: 'YOUR_DOMAIN',
+  client_id: 'YOUR_CLIENT_ID'
+});
+
+
+const logout = auth0Client.logout(...e)
+
+<button
+  onClick={() => logout({ returnTo: window.location.origin })}>
+  Logout
+</button>
+
+```
+
+</CodeSurferLayout>
+
+---
+
+#### *Hooks!* 🎣
+
+---
+
+
+<CodeSurferLayout>
+
+```js title="Context"
+
+const AuthorizationContext = React.createContext()
+
+```
+
+```js title="Context"
+
+const AuthorizationContext = React.createContext()
+
+export const Authorization = ({children}) => {
+  return (
+    <AuthorizationContext.Provider
+        value={{
+          ...
+        }}
+      >
+        {children}
+      </AuthorizationContext.Provider>
+    )
+}
+
+```
+
+</CodeSurferLayout>
+
+---
+
+
+<CodeSurferLayout>
+
+```js title="Context"
+
+const AuthorizationContext = React.createContext()
+
+```
+
+```js title="Context"
+
+const AuthorizationContext = React.createContext()
+
+export const Authorization = ({children}) => {
+  return (
+    <AuthorizationContext.Provider
+        value={{
+          ...
+        }}
+      >
+        {children}
+      </AuthorizationContext.Provider>
+    )
+}
+
+```
+
+</CodeSurferLayout>
+
+---
+
+<CodeSurferLayout>
+
+```js title="Context"
+
+const auth0Client = await createAuth0Client({
+  domain: 'YOUR_DOMAIN',
+  client_id: 'YOUR_CLIENT_ID'
+});
+
+```
+
+```js title="Context"
+
+const auth0Client = await createAuth0Client({
+  domain: 'YOUR_DOMAIN',
+  client_id: 'YOUR_CLIENT_ID'
+});
+
+ const isAuthenticated = await auth0Client.isAuthenticated()
+
+```
+
+```js title="Context"
+
+const auth0Client = await createAuth0Client({
+  domain: 'YOUR_DOMAIN',
+  client_id: 'YOUR_CLIENT_ID'
+});
+
+ const isAuthenticated = await auth0Client.isAuthenticated()
+
+ const user = isAuthenticated ? await auth0Client.getUser() : null
+
+```
+
+```js title="Context"
+
+const auth0Client = await createAuth0Client({
+  domain: 'YOUR_DOMAIN',
+  client_id: 'YOUR_CLIENT_ID'
+});
+
+ const isAuthenticated = await auth0Client.isAuthenticated()
+
+ const user = isAuthenticated ? await auth0Client.getUser() : null
+
+ const loginWithRedirect = auth0Client.loginWithRedirect(...e)
+
+```
+
+```js title="Context"
+
+const auth0Client = await createAuth0Client({
+  domain: 'YOUR_DOMAIN',
+  client_id: 'YOUR_CLIENT_ID'
+});
+
+ const isAuthenticated = await auth0Client.isAuthenticated()
+
+ const user = isAuthenticated ? await auth0Client.getUser() : null
+
+ const loginWithRedirect = auth0Client.loginWithRedirect(...e)
+
+ const getTokenSilently = auth0Client.getTokenSilently(...e)
+
+```
+
+```js title="Context"
+
+const auth0Client = await createAuth0Client({
+  domain: 'YOUR_DOMAIN',
+  client_id: 'YOUR_CLIENT_ID'
+});
+
+ const isAuthenticated = await auth0Client.isAuthenticated()
+
+ const user = isAuthenticated ? await auth0Client.getUser() : null
+
+ const loginWithRedirect = auth0Client.loginWithRedirect(...e)
+
+ const getTokenSilently = auth0Client.getTokenSilently(...e)
+
+ const logout = auth0Client.logout(...e)
+
+```
+
+</CodeSurferLayout>
+
+---
+
+<CodeSurferLayout>
+
+```js title="Other stuff"
+
+const [isLoading, updateLoading] = useState(false)
+
+```
+
+```js title="Other stuff"
+
+const [isLoading, updateLoading] = useState(false)
+
+const [user, updateUser] = useState(null)
+
+```
+
+```js title="Other stuff"
+
+const [isLoading, updateLoading] = useState(false)
+
+const [user, updateUser] = useState(null)
+
+const [isAuthenticated, updateIsAuthenticated] = useState(false)
+
+
+```
+
+</CodeSurferLayout>
+
+---
+
+<CodeSurferLayout>
+
+```js title="Putting it together"
+export const Authorization = ({children}) => {
+  return (
+    <AuthorizationContext.Provider
+        value={{
+          ...
+        }}
+      >
+        {children}
+      </AuthorizationContext.Provider>
+    )
+}
+```
+
+```js title="Putting it together"
+export const Authorization = ({children}) => {
+  useEffect(() => {
+
+  }, [])
+  return (
+    <AuthorizationContext.Provider
+        value={{
+          ...
+        }}
+      >
+        {children}
+      </AuthorizationContext.Provider>
+    )
+}
+```
+
+```js title="Putting it together"
+export const Authorization = ({children}) => {
+  useEffect(() => {
+    const initializeAuthorization = async () => {
+      const auth0Client = await createAuth0Client({
+        domain: 'YOUR_DOMAIN',
+        client_id: 'YOUR_CLIENT_ID'
+      });
     }
-  });
-  const data = await result.json();
-  console.log(data);
-});
-
+  }, [])
+  return (
+    <AuthorizationContext.Provider
+        value={{
+          ...
+        }}
+      >
+        {children}
+      </AuthorizationContext.Provider>
+    )
+}
 ```
+
+```js title="Putting it together"
+export const Authorization = ({children}) => {
+  useEffect(() => {
+    const initializeAuthorization = async () => {
+      const auth0Client = await createAuth0Client({
+        domain: 'YOUR_DOMAIN',
+        client_id: 'YOUR_CLIENT_ID'
+      });
+    const isAuthenticated = await auth0Client.isAuthenticated()
+    }
+  }, [])
+  return (
+    <AuthorizationContext.Provider
+        value={{
+          ...
+        }}
+      >
+        {children}
+      </AuthorizationContext.Provider>
+    )
+}
+```
+
+```js title="Putting it together"
+export const Authorization = ({children}) => {
+  useEffect(() => {
+    const initializeAuthorization = async () => {
+      const auth0Client = await createAuth0Client({
+        domain: 'YOUR_DOMAIN',
+        client_id: 'YOUR_CLIENT_ID'
+      });
+    const isAuthenticated = await auth0Client.isAuthenticated()
+    const user = isAuthenticated ? await auth0Client.getUser() : null
+    }
+  }, [])
+  return (
+    <AuthorizationContext.Provider
+        value={{
+          ...
+        }}
+      >
+        {children}
+      </AuthorizationContext.Provider>
+    )
+}
+```
+
+```js title="Putting it together"
+export const Authorization = ({children}) => {
+  const [user, updateUser] = useState(null)
+  useEffect(() => {
+    const initializeAuthorization = async () => {
+      const auth0Client = await createAuth0Client({
+        domain: 'YOUR_DOMAIN',
+        client_id: 'YOUR_CLIENT_ID'
+      });
+    const isAuthenticated = await auth0Client.isAuthenticated()
+    const user = isAuthenticated ? await auth0Client.getUser() : null
+    updateUser(user)
+    }
+  }, [])
+  return (
+    <AuthorizationContext.Provider
+        value={{
+          ...
+        }}
+      >
+        {children}
+      </AuthorizationContext.Provider>
+    )
+}
+```
+
+```js title="Putting it together"
+export const Authorization = ({children}) => {
+  const [user, updateUser] = useState(null)
+  const [isLoading, updateLoading] = useState(true)
+  useEffect(() => {
+    const initializeAuthorization = async () => {
+      const auth0Client = await createAuth0Client({
+        domain: 'YOUR_DOMAIN',
+        client_id: 'YOUR_CLIENT_ID'
+      });
+    const isAuthenticated = await auth0Client.isAuthenticated()
+    const user = isAuthenticated ? await auth0Client.getUser() : null
+    updateUser(user)
+    updateLoading(false)
+    }
+  }, [])
+  return (
+    <AuthorizationContext.Provider
+        value={{
+          ...
+        }}
+      >
+        {children}
+      </AuthorizationContext.Provider>
+    )
+}
+```
+
+```js title="Putting it together"
+export const Authorization = ({children}) => {
+  const [user, updateUser] = useState(null)
+  const [isLoading, updateLoading] = useState(true)
+  const [isAuthenticated, updateIsAuthenticated] = useState(true)
+  useEffect(() => {
+    const initializeAuthorization = async () => {
+      const auth0Client = await createAuth0Client({
+        domain: 'YOUR_DOMAIN',
+        client_id: 'YOUR_CLIENT_ID'
+      });
+    const isAuthenticated = await auth0Client.isAuthenticated()
+    const user = isAuthenticated ? await auth0Client.getUser() : null
+    updateUser(user)
+    updateLoading(false)
+    updateIsAuthenticated(user ? true : false)
+    }
+  }, [])
+  return (
+    <AuthorizationContext.Provider
+        value={{
+          ...
+        }}
+      >
+        {children}
+      </AuthorizationContext.Provider>
+    )
+}
+```
+
+```js title="Putting it together"
+export const Authorization = ({children}) => {
+  const [user, updateUser] = useState(null)
+  const [isLoading, updateLoading] = useState(true)
+  const [isAuthenticated, updateIsAuthenticated] = useState(true)
+  useEffect(() => {
+    const initializeAuthorization = async () => {
+      const auth0Client = await createAuth0Client({
+        domain: 'YOUR_DOMAIN',
+        client_id: 'YOUR_CLIENT_ID'
+      });
+    const isAuthenticated = await auth0Client.isAuthenticated()
+    const user = isAuthenticated ? await auth0Client.getUser() : null
+    updateUser(user)
+    updateLoading(false)
+    updateIsAuthenticated(user ? true : false)
+    }
+  }, [])
+  return (
+    <AuthorizationContext.Provider
+        value={{
+          isLoading,
+          isAuthenticated,
+          user,
+          loginWithRedirect: (...e) => auth0Client.loginWithRedirect(...e),
+          getTokenSilently: (...e) => auth0Client.getTokenSilently(...e),
+          getTokenSilently: (...e) => auth0Client.getTokenSilently(...e),
+          logout: (...e) => auth0Client.logout(...e)
+        }}
+      >
+        {children}
+      </AuthorizationContext.Provider>
+    )
+}
+```
+
 </CodeSurferLayout>
 
 ---
 
 <CodeSurferLayout>
-
-```js title="Calling your API"
-
-import createAuth0Client from '@auth0/auth0-spa-js';
-
-// either with async/await or promises
-const auth0 = await createAuth0Client({
-  domain: 'YOUR_DOMAIN',
-  client_id: 'YOUR_CLIENT_ID'
-});
-
-```
-
-```js title="Login and get user info"
-const auth0 = await createAuth0Client({
-  domain: 'YOUR_DOMAIN',
-  client_id: 'YOUR_CLIENT_ID'
-})
-
-document.getElementById('login').addEventListener('click', async () => {
-  await auth0.loginWithRedirect({
-    redirect_uri: 'http://localhost:3000/'
-  });
-  const user = await auth0.getUser();
-});
-
-```
-</CodeSurferLayout>
-
----
-
-### What comes with the SDK?
-
-- isAuthenticated()
-- getUser()
-- loginWithPopup()
-- handleRedirectCallback()
-
----
-
-### What comes with the SDK?
-
-- getIdTokenClaims()
-- loginWithRedirect()
-- getTokenSilently()
-- getTokenWithPopup()
-- logout()
-
----
-
-#### React _Context_ & the _useAuth0_ hook
-
----
-
-<CodeSurferLayout>
-
-```js title="Context"
-
-const Auth0Context = React.createContext()
-
-const useAuth0 = () => useContext(Auth0Context);
-
-```
-
-```js title="Context"
-
-const Auth0Context = React.createContext()
-
-<Auth0Context.Provider
-      value={{
-        ...
-      }}
-    >
-      {children}
-    </Auth0Context.Provider>
-
-```
 
 ```js title="Context"
 
 ReactDOM.render(
-  <Auth0Provider>
+  <Authorization>
     <App />
-  </Auth0Provider>
+  </Authorization>
 )
-
-```
-
-```js title="Context"
-
-import { useAuth0 } from "../react-auth0-spa"
-
-const { ... } = useAuth0()
 
 ```
 
@@ -320,183 +831,26 @@ const { ... } = useAuth0()
 
 <CodeSurferLayout>
 
-```js
-<Auth0Context.Provider
-      value={{
-        ...
-      }}
-    >
-      {children}
-</Auth0Context.Provider>
-```
+```js title="useAuthorization Hook"
 
-```js
-export const Auth0Provider = ({children}) => {
-  return (
-    <Auth0Context.Provider
-          value={{
-            ...
-          }}
-        >
-          {children}
-    </Auth0Context.Provider>
-    )
-}
-```
+const AuthorizationContext = React.createContext()
 
-```js
-export const Auth0Provider = ({children}) => {
-  useEffect(() => {
-    const auth0 = await createAuth0Client({
-    domain: 'YOUR_DOMAIN',
-    client_id: 'YOUR_CLIENT_ID'
-    })
-  }, [])
-  return (
-    <Auth0Context.Provider
-          value={{
-            ...
-          }}
-        >
-          {children}
-    </Auth0Context.Provider>
-    )
-}
-```
-
-```js
-export const Auth0Provider = ({children}) => {
-  const [loading, setLoading] = useState(false)
-  ...
-  useEffect(() => {
-    setLoading(true)
-    const auth0 = await createAuth0Client({
-    domain: 'YOUR_DOMAIN',
-    client_id: 'YOUR_CLIENT_ID'
-    })
-    setLoading(false)
-  }, [])
-  return (
-    <Auth0Context.Provider
-          value={{
-            ...
-          }}
-        >
-          {children}
-    </Auth0Context.Provider>
-    )
-}
-```
-
-```js
-export const Auth0Provider = ({children}) => {
-  const [loading, setLoading] = useState(false)
-  const [user, setUser] = useState();
-  useEffect(() => {
-    setLoading(true)
-    const auth0 = await createAuth0Client({
-    domain: 'YOUR_DOMAIN',
-    client_id: 'YOUR_CLIENT_ID'
-    })
-    setLoading(false)
-    const isAuthenticated = await auth0FromHook.isAuthenticated();
-    if (isAuthenticated) {
-        const user = await auth0FromHook.getUser();
-        setUser(user);
-      }
-  }, [])
-  return (
-    <Auth0Context.Provider
-          value={{
-            ...
-          }}
-        >
-          {children}
-    </Auth0Context.Provider>
-    )
-}
-```
-
-```js
-export const Auth0Provider = ({children}) => {
-  const [loading, setLoading] = useState(false)
-  const [user, setUser] = useState();
-  useEffect(() => {
-    setLoading(true)
-    const auth0 = await createAuth0Client({
-    domain: 'YOUR_DOMAIN',
-    client_id: 'YOUR_CLIENT_ID'
-    }, [])
-    setLoading(false)
-    const isAuthenticated = await auth0FromHook.isAuthenticated();
-    if (isAuthenticated) {
-        const user = await auth0FromHook.getUser();
-        setUser(user);
-      }
-  })
-  return (
-    <Auth0Context.Provider
-      value={{
-        isAuthenticated,
-        user,
-        loginWithPopup,
-        handleRedirectCallback,
-        getIdTokenClaims: (...p) => auth0Client.getIdTokenClaims(...p),
-        loginWithRedirect: (...p) => auth0Client.loginWithRedirect(...p),
-        getTokenSilently: (...p) => auth0Client.getTokenSilently(...p),
-        getTokenWithPopup: (...p) => auth0Client.getTokenWithPopup(...p),
-        logout: (...p) => auth0Client.logout(...p)
-      }}
-        >
-          {children}
-    </Auth0Context.Provider>
-    )
-}
-```
-
-```js title="PrivateRoute.js"
-
-import { useAuth0 } from "../react-auth0-spa"
-
-const { isAuthenticated, loginWithRedirect } = useAuth0()
+const useAuthorization = () => useContext(AuthorizationContext);
 
 ```
 
-```js
-export const Auth0Provider = ({children}) => {
-  const [loading, setLoading] = useState(false)
-  const [user, setUser] = useState();
-  useEffect(() => {
-    setLoading(true)
-    const auth0 = await createAuth0Client({
-    domain: 'YOUR_DOMAIN',
-    client_id: 'YOUR_CLIENT_ID'
-    }, [])
-    setLoading(false)
-    const isAuthenticated = await auth0FromHook.isAuthenticated();
-    if (isAuthenticated) {
-        const user = await auth0FromHook.getUser();
-        setUser(user);
-      }
-  })
-  return (
-    <Auth0Context.Provider
-      value={{
-        isAuthenticated,
-        user,
-        loginWithPopup,
-        handleRedirectCallback,
-        getIdTokenClaims: (...p) => auth0Client.getIdTokenClaims(...p),
-        loginWithRedirect: (...p) => auth0Client.loginWithRedirect(...p),
-        getTokenSilently: (...p) => auth0Client.getTokenSilently(...p),
-        getTokenWithPopup: (...p) => auth0Client.getTokenWithPopup(...p),
-        logout: (...p) => auth0Client.logout(...p)
-      }}
-        >
-          {children}
-    </Auth0Context.Provider>
-    )
-}
+```js title="useAuthorization Hook"
+
+export const useAuthorization = () => useContext(AuthorizationContext);
+
+```
+
+```js title="useAuthorization Hook"
+
+import {useAuthorization} from './auth-context.js'
+
+const { isLoading, user, loginWithRedirect, logout} = useAuthorization()
+
 ```
 
 </CodeSurferLayout>

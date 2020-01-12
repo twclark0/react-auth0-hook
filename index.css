@@ -49,3 +49,10 @@ em {
 a {
   color: hsl(13, 90%, 57%) !important;
 }
+.containterFlex {
+  display: flex;
+}
+.containterFlex div {
+  display: flex;
+  flex-direction: column;
+}
